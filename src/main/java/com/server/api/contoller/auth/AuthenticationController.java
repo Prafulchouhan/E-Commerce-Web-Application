@@ -1,5 +1,7 @@
 package com.server.api.contoller.auth;
 
+import com.server.api.dto.LoginBody;
+import com.server.api.dto.LoginResponse;
 import com.server.api.dto.RegistrationBody;
 import com.server.exception.UserAlreadyExistsException;
 import com.server.service.UserService;
@@ -25,6 +27,19 @@ public class AuthenticationController {
             return ResponseEntity.ok().build();
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody){
+        String jwt= userService.logIn(loginBody);
+        if(jwt==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        else {
+            LoginResponse response=new LoginResponse();
+            response.setJwt(jwt);
+            return ResponseEntity.ok(response);
         }
     }
 }
